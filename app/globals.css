@@ -1,0 +1,190 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme inline {
+  --font-primary: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", "Menlo", "Monaco", "Consolas",
+    monospace;
+
+  /* shadcn/ui compatible tokens */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #0e1410;
+  --primary: #7c5cfc;
+  --primary-foreground: #ffffff;
+  --secondary: #f0ede6;
+  --secondary-foreground: #3c4237;
+  --muted: #f5f2ec;
+  --muted-foreground: #544237;
+  --accent: #ede8fe;
+  --accent-foreground: #3c4237;
+  --destructive: #e8608f;
+  --destructive-foreground: #ffffff;
+  --border: rgba(84, 66, 55, 0.12);
+  --input: rgba(84, 66, 55, 0.12);
+  --ring: #7c5cfc;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  /* `background: transparent` so the fixed SilkBackground (z-index: -1) can
+     show through. Use html's bg as the page-level fallback for when the
+     silk isn't mounted (e.g. /demo). */
+  background: transparent;
+  color: #e6e1d7;
+}
+
+/* Radial fade mask — fades content at the edges */
+.mask-radial-fade {
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 45%, black 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 45%, black 40%, transparent 100%);
+}
+
+html {
+  background: linear-gradient(135deg, #d4e8eb 0%, #fae3d9 35%, #a1dadb 70%, #5bb2b6 100%);
+}
+
+body {
+  font-family: var(--font-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* ── Glassmorph utilities ── */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1.5rem;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.25rem;
+  transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+.glass-card.active {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* Utility for sections that need to block the silk canvas beneath */
+.glass-section {
+  position: relative;
+  z-index: 1;
+}
+
+/* Word-by-word reveal — used by the hero overlay component (last 50 frames) */
+@keyframes word-appear {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.8);
+    filter: blur(10px);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(10px) scale(0.95);
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* Each word starts hidden and gets its own delayed animation in JS */
+.word {
+  display: inline-block;
+  opacity: 0;
+  margin: 0 0.25em;
+  transition: text-shadow 320ms ease;
+  cursor: default;
+}
+
+/* Entrance animations — Intersection Observer toggles .animate-in */
+.animate-observe {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+
+.animate-observe.animate-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .showcase-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+  .showcase-sticky {
+    position: static !important;
+  }
+  .sticky-card-row {
+    flex-direction: column !important;
+    gap: 1.5rem !important;
+    position: static !important;
+    top: auto !important;
+  }
+  .sticky-card-visual {
+    height: 240px !important;
+    width: 100% !important;
+    flex: none !important;
+  }
+  .hero-showcase-grid {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+  .hero-showcase-spotlight {
+    height: 400px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .word {
+    opacity: 1 !important;
+    animation: none !important;
+    transform: none !important;
+    filter: none !important;
+  }
+  .showcase-visual {
+    transition: none !important;
+  }
+}
