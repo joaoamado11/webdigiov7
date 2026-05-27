@@ -180,7 +180,47 @@ export default function ScrollShowcase() {
   }, []);
 
   return (
-    <section className="glass-section" style={{ padding: "4rem 0" }}>
+    <section className="glass-section" style={{ padding: "6rem 0" }}>
+      {/* Section header */}
+      <div
+        style={{
+          maxWidth: 1200,
+          margin: "0 auto 3.5rem auto",
+          padding: "0 2rem",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "1.25rem",
+          textAlign: "center",
+        }}
+      >
+        <div
+          style={{
+            fontFamily: "ui-monospace, monospace",
+            fontSize: 12,
+            letterSpacing: "0.15em",
+            textTransform: "uppercase",
+            color: "#7c5cfc",
+          }}
+        >
+          Our Services
+        </div>
+        <h2
+          style={{
+            fontSize: "clamp(2rem, 5vw, 3.25rem)",
+            fontWeight: 500,
+            lineHeight: 1.2,
+            letterSpacing: "-0.02em",
+            color: "#0e1410",
+            margin: 0,
+          }}
+        >
+          Everything you need
+          <br />
+          to scale your business
+        </h2>
+      </div>
+
       <div
         className="showcase-grid"
         style={{

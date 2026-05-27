@@ -5,6 +5,8 @@ import { useEffect, useRef, useState, memo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { BackgroundGradient } from "@/components/ui/background-gradient";
+import ButtonWithIcon from "@/components/ui/ButtonWithIcon";
+import { ButtonGlow } from "@/components/ui/ButtonGlow";
 
 // ── Service data ──
 
@@ -54,15 +56,22 @@ interface ServiceMeta {
   subtitle: string;
 }
 
-function AnimatedProduct({ service, isKey, containerSize, paused, onReachCenter, onComplete }: {
+function AnimatedProduct({ service, isKey, containerSize, paused, onReachCenter, onComplete, large }: {
   service: (typeof keyServices)[0];
   isKey?: boolean;
   containerSize: { width: number; height: number };
   paused?: boolean;
   onReachCenter?: (meta: ServiceMeta) => void;
   onComplete?: () => void;
+  large?: boolean;
 }) {
   const controls = useAnimation();
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
 
   useEffect(() => {
     if (paused) {
@@ -71,6 +80,7 @@ function AnimatedProduct({ service, isKey, containerSize, paused, onReachCenter,
     }
 
     const animate = async () => {
+      if (!mountedRef.current) return;
       if (isKey) {
         const edges: Array<"top" | "bottom" | "left" | "right"> = ["top", "bottom", "left", "right"];
         const entryEdge = edges[Math.floor(Math.random() * edges.length)];
@@ -94,13 +104,20 @@ function AnimatedProduct({ service, isKey, containerSize, paused, onReachCenter,
         });
       } else {
         const loop = async () => {
+          // Start from a random edge
+          const edges: Array<"top" | "bottom" | "left" | "right"> = ["top", "bottom", "left", "right"];
+          let from = getRandomEdgePoint(containerSize, edges[Math.floor(Math.random() * edges.length)]);
+          await controls.set({ x: from.x, y: from.y, scale: 0.5, filter: "blur(2px)", opacity: 0.6 });
+
           while (true) {
-            const edges: Array<"top" | "bottom" | "left" | "right"> = ["top", "bottom", "left", "right"];
-            const s = getRandomEdgePoint(containerSize, edges[Math.floor(Math.random() * edges.length)]);
-            const e = getRandomEdgePoint(containerSize, edges[Math.floor(Math.random() * edges.length)]);
-            await controls.set({ x: s.x, y: s.y, scale: 0.5, filter: "blur(2px)", opacity: 0.6 });
-            await controls.start({ x: e.x, y: e.y, transition: { duration: 4, ease: "linear" } });
-            await new Promise((r) => setTimeout(r, 50));
+            // Pick a destination — not the same edge direction to avoid straight lines
+            const to = getRandomEdgePoint(containerSize, edges[Math.floor(Math.random() * edges.length)]);
+            // Use easeInOut for boomerang-like deceleration/acceleration
+            await controls.start({
+              x: to.x, y: to.y,
+              transition: { duration: 5 + Math.random() * 4, ease: "easeInOut" },
+            });
+            from = to;
           }
         };
         loop();
@@ -112,7 +129,7 @@ function AnimatedProduct({ service, isKey, containerSize, paused, onReachCenter,
   }, [isKey, containerSize, paused]);
 
   return (
-    <motion.div className="absolute w-16 h-16 md:w-20 md:h-20" animate={controls} style={{ willChange: "transform, opacity, filter" }}>
+    <motion.div className={large ? "absolute w-40 h-40 md:w-52 md:h-52" : "absolute w-16 h-16 md:w-20 md:h-20"} animate={controls} style={{ willChange: "transform, opacity, filter" }}>
       <div className="relative w-full h-full rounded-lg overflow-hidden border border-white/10 shadow-lg">
         <img src={service.image} alt={service.name} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
         <div className="absolute inset-0 bg-black/10" />
@@ -297,12 +314,11 @@ export default function HeroShowcase() {
               {/* Buttons */}
               <div style={{ opacity: buttonsOp, transform: `translateY(${(1 - buttonsOp) * 16}px)`, transition: "opacity 0.3s linear, transform 0.3s linear" }}>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem", marginBottom: "2rem" }}>
-                  <BackgroundGradient containerClassName="inline-flex !rounded-full">
-                    <Button size="lg" className="gap-2 !rounded-full px-7 text-base uppercase tracking-[0.15em]"
-                      style={{ background: "linear-gradient(135deg, #7c5cfc, #3db5b0)", border: "none", color: "#fff" }}>
-                      Start a project <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </BackgroundGradient>
+                  <ButtonGlow>
+                    <ButtonWithIcon>
+                      Start a project
+                    </ButtonWithIcon>
+                  </ButtonGlow>
                   <Button size="lg" variant="outline" className="!rounded-full px-7 text-base"
                     style={{ borderColor: "rgba(84,66,55,0.15)", color: colors.subdued, background: "rgba(255,255,255,0.3)" }}>
                     Our work
@@ -345,7 +361,7 @@ export default function HeroShowcase() {
                 }}
               >
                 {bgCardsActive && bgInstances.map((item) => (
-                  <AnimatedProduct key={item.id} service={item.service} containerSize={containerSize} />
+                  <AnimatedProduct key={item.id} service={item.service} containerSize={containerSize} large />
                 ))}
                 {keyCardsActive && keyAnimating && (
                   <AnimatedProduct

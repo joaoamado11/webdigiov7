@@ -7,6 +7,10 @@ import SilkBackground from "@/components/ui/SilkBackground";
 import ScrollShowcase from "@/components/ui/ScrollShowcase";
 import StickyCards from "@/components/ui/StickyCards";
 import HeroShowcase from "@/components/ui/HeroShowcase";
+import ParallaxReveal from "@/components/ui/ParallaxReveal";
+import FeatureCarouselSection from "@/components/ui/FeatureCarouselSection";
+import OrbitCarousel from "@/components/ui/OrbitCarousel";
+import Footer from "@/components/ui/Footer";
 
 const FRAME_COUNT = 220;
 const FRAMES_FOR_SILK = 25;
@@ -61,9 +65,30 @@ export default function HomePage() {
         {/* Sticky Cards — stacked showcase with entrance animations */}
         <StickyCards />
 
-        {/* Extra breathing room at the bottom */}
-        <div style={{ height: "15vh" }} />
+        {/* Feature Carousel — interactive step-by-step process showcase */}
+        <FeatureCarouselSection />
+
+{/* Orbit Carousel — 3D rotating card carousel */}
+        <OrbitCarousel />
+
+        {/* Parallax Reveal — a new page slides up from below as you scroll */}
+        <ParallaxReveal />
       </main>
+
+      {/* Footer */}
+      <div
+        style={{
+          background: "linear-gradient(180deg, #1a2320 0%, #0e1410 100%)",
+          padding: "4rem 1.5rem 2rem",
+          display: "flex",
+          justifyContent: "center",
+          marginTop: "-1px",
+        }}
+      >
+        <div style={{ maxWidth: 1200, width: "100%" }}>
+          <Footer />
+        </div>
+      </div>
     </>
   );
 }
