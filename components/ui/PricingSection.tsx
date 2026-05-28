@@ -42,13 +42,15 @@ const containerVariants = {
   visible: { transition: { staggerChildren: 0.12 } },
 };
 
+const easeOut = [0.25, 0.46, 0.45, 0.94] as [number, number, number, number];
+
 const itemVariants = {
   hidden: { opacity: 0, y: 40, filter: "blur(8px)" },
   visible: {
     opacity: 1,
     y: 0,
     filter: "blur(0px)",
-    transition: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] },
+    transition: { duration: 0.7, ease: easeOut },
   },
 };
 
@@ -59,7 +61,7 @@ function PriceCounter({ inView: visible }: { inView: boolean }) {
     if (!visible) return;
     const controls = animate(0, 690, {
       duration: 1.8,
-      ease: [0.25, 0.46, 0.45, 0.94],
+      ease: easeOut,
       onUpdate: (v) => setDisplay(Math.round(v)),
     });
     return () => controls.stop();
