@@ -118,8 +118,12 @@ export default function FaqModal({
 
   // Distance from viewport center to the button — used to slide the panel
   // from the button position into the center during the entrance animation.
-  const cx = (origin?.x ?? window.innerWidth / 2) - window.innerWidth / 2;
-  const cy = (origin?.y ?? window.innerHeight / 2) - window.innerHeight / 2;
+  // Guard window access for SSR pass.
+  const hasWindow = typeof window !== "undefined";
+  const vw = hasWindow ? window.innerWidth : 0;
+  const vh = hasWindow ? window.innerHeight : 0;
+  const cx = (origin?.x ?? vw / 2) - vw / 2;
+  const cy = (origin?.y ?? vh / 2) - vh / 2;
 
   useEffect(() => {
     if (open) {
