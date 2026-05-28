@@ -380,11 +380,15 @@ export default function OsmoMenu() {
   const [visible, setVisible] = useState(false);
   const closeTimeout = useRef<NodeJS.Timeout | null>(null);
   const lastScrollY = useRef(0);
+  const accumDown = useRef(0);
+  const HIDE_THRESHOLD = 150; // px of accumulated downward scroll before hiding
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
   useEffect(() => {
     const onScroll = () => {
       const currentY = window.scrollY;
+      const delta = currentY - lastScrollY.current;
+      lastScrollY.current = currentY;
       setScrolled(currentY > 20);
 
       // Check hero section positions
@@ -403,26 +407,29 @@ export default function OsmoMenu() {
 
       if (!heroStarted) {
         setVisible(false);
-        lastScrollY.current = currentY;
+        accumDown.current = 0;
         return;
       }
 
       // Before hero fully passes, nav always visible
       if (!heroFullyPassed) {
         setVisible(true);
-        lastScrollY.current = currentY;
+        accumDown.current = 0;
         return;
       }
 
-      // After hero fully passes: scroll down → hide, scroll up → show
-      const delta = currentY - lastScrollY.current;
+      // After hero fully passes: accumulate downward scroll
       if (delta < -5) {
+        // Scrolling up — show immediately, reset accumulator
         setVisible(true);
-      } else if (delta > 80) {
-        setVisible(false);
+        accumDown.current = 0;
+      } else if (delta > 0) {
+        // Scrolling down — accumulate and hide after threshold
+        accumDown.current += delta;
+        if (accumDown.current > HIDE_THRESHOLD) {
+          setVisible(false);
+        }
       }
-
-      lastScrollY.current = currentY;
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
