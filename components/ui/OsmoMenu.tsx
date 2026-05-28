@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, X, Menu } from "lucide-react";
+import { ChevronDown, X, Menu, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ButtonWithIcon from "@/components/ui/ButtonWithIcon";
+import FaqModal from "@/components/ui/FaqModal";
 
 interface NavLink {
   title: string;
@@ -373,6 +374,8 @@ function useMediaQuery(query: string) {
 export default function OsmoMenu() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [faqOpen, setFaqOpen] = useState(false);
+  const [faqOrigin, setFaqOrigin] = useState<{ x: number; y: number } | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const [visible, setVisible] = useState(false);
   const closeTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -614,6 +617,39 @@ export default function OsmoMenu() {
             >
               About
             </a>
+            <button
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                setFaqOrigin({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
+                setFaqOpen(true);
+              }}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.35rem",
+                fontSize: "0.8rem",
+                fontWeight: 500,
+                color: "#544237",
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                fontFamily: "inherit",
+                padding: "0.25rem 0.5rem",
+                borderRadius: 6,
+                transition: "color 0.15s ease, background 0.15s ease",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.color = "#0e1410";
+                (e.currentTarget as HTMLElement).style.background = "rgba(14,20,16,0.04)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.color = "#544237";
+                (e.currentTarget as HTMLElement).style.background = "transparent";
+              }}
+            >
+              <HelpCircle size={14} />
+              FAQ
+            </button>
             <ButtonWithIcon size="sm">
               Start a project
             </ButtonWithIcon>
@@ -744,6 +780,30 @@ export default function OsmoMenu() {
               >
                 About
               </a>
+              <button
+                onClick={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  setFaqOrigin({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
+                  setMobileOpen(false);
+                  setFaqOpen(true);
+                }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  fontSize: "1rem",
+                  fontWeight: 500,
+                  color: "#544237",
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  fontFamily: "inherit",
+                  padding: "0.5rem 0",
+                }}
+              >
+                <HelpCircle size={16} />
+                FAQ
+              </button>
               <ButtonWithIcon onClick={() => setMobileOpen(false)}>
                 Start a project
               </ButtonWithIcon>
@@ -751,6 +811,9 @@ export default function OsmoMenu() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* FAQ Modal */}
+      <FaqModal open={faqOpen} onClose={() => setFaqOpen(false)} origin={faqOrigin} />
     </>
   );
 }

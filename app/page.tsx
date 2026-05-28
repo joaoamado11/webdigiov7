@@ -10,6 +10,7 @@ import HeroShowcase from "@/components/ui/HeroShowcase";
 import ParallaxReveal from "@/components/ui/ParallaxReveal";
 import FeatureCarouselSection from "@/components/ui/FeatureCarouselSection";
 import OrbitCarousel from "@/components/ui/OrbitCarousel";
+import PricingSection from "@/components/ui/PricingSection";
 import Footer from "@/components/ui/Footer";
 
 const FRAME_COUNT = 220;
@@ -70,6 +71,9 @@ export default function HomePage() {
 
 {/* Orbit Carousel — 3D rotating card carousel */}
         <OrbitCarousel />
+
+        {/* Pricing — premium plans with parallax */}
+        <PricingSection />
 
         {/* Parallax Reveal — a new page slides up from below as you scroll */}
         <ParallaxReveal />

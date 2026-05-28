@@ -170,7 +170,7 @@ const MetadataDisplay = memo(function MetadataDisplay({ metadata }: { metadata: 
 
 // ── Hero Showcase ──
 
-const REVEAL_SCROLL_VH = 2.0; // 200vh — reveal + idle + outro phases
+const REVEAL_SCROLL_VH = 2.8; // 280vh — reveal + extended idle + outro phases
 
 export default function HeroShowcase() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -247,9 +247,9 @@ export default function HeroShowcase() {
   const bgCardsActive = revealProgress >= 0.3;
   const keyCardsActive = revealProgress >= 0.42;
 
-  // Outro split-fade phase (progress 0.88 → 1.0) — left slides left, right slides right, both fade.
-  // Long idle/dwell before outro starts so the hero stays on screen longer.
-  const outroP = phaseOpacity(0.88, 1.0);
+  // Outro split-fade phase (progress 0.93 → 1.0) — left slides left, right slides right, both fade.
+  // Extended idle before outro so the hero stays on screen much longer.
+  const outroP = phaseOpacity(0.93, 1.0);
   const outroFade = 1 - outroP;
   const leftOutroX = outroP * -220;
   const rightOutroX = outroP * 220;
