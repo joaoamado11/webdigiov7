@@ -142,10 +142,42 @@ function Visual({ item, active }: { item: ShowcaseItem; active: boolean }) {
   );
 }
 
+// Sticky offset for the left card and JS-driven release sync for the title.
+const STICKY_TOP_REM = 15;
+
 export default function ScrollShowcase() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [entryP, setEntryP] = useState(0);
+  const [titleOffset, setTitleOffset] = useState(0);
+  const sectionRef = useRef<HTMLElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const observerRef = useRef<IntersectionObserver | null>(null);
+
+  // Scroll-driven entry + title-release sync.
+  // entryP: rises from bottom of viewport into final position.
+  // titleOffset: as the grid scrolls past the sticky-left release point, push
+  // the title up by the same amount so title + left card move together.
+  useEffect(() => {
+    const onScroll = () => {
+      const sec = sectionRef.current;
+      const grid = gridRef.current;
+      if (!sec) return;
+      const rect = sec.getBoundingClientRect();
+      const startTop = window.innerHeight * 0.5;
+      const p = (startTop - rect.top) / startTop;
+      setEntryP(Math.max(0, Math.min(1, p)));
+
+      if (grid) {
+        const stickyTopPx = STICKY_TOP_REM * 16;
+        const gridBottom = grid.getBoundingClientRect().bottom;
+        setTitleOffset(Math.max(0, stickyTopPx - gridBottom));
+      }
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     if (observerRef.current) observerRef.current.disconnect();
@@ -180,18 +212,43 @@ export default function ScrollShowcase() {
   }, []);
 
   return (
-    <section className="glass-section" style={{ padding: "6rem 0" }}>
-      {/* Section header */}
+    <section
+      ref={sectionRef}
+      className="glass-section"
+      style={{
+        padding: "6rem 0",
+        marginTop: "-50vh", // begin entry at HeroShowcase sticky release, after outro completes
+        position: "relative",
+        zIndex: 2,
+      }}
+    >
       <div
         style={{
+          transform: entryP < 1 ? `translate3d(0, ${(1 - entryP) * 70}vh, 0)` : undefined,
+          opacity: entryP,
+          willChange: entryP < 1 ? "transform, opacity" : "auto",
+        }}
+      >
+      {/* Section header — sticky at top, but JS-offset so it releases together with the left card */}
+      <div
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 5,
           maxWidth: 1200,
-          margin: "0 auto 3.5rem auto",
-          padding: "0 2rem",
+          margin: "0 auto 1.5rem auto",
+          padding: "1.75rem 2rem 1.25rem",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: "1.25rem",
+          gap: "1rem",
           textAlign: "center",
+          background:
+            "linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.4) 75%, rgba(255,255,255,0) 100%)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+          transform: titleOffset > 0 ? `translateY(${-titleOffset}px)` : undefined,
+          willChange: titleOffset > 0 ? "transform" : "auto",
         }}
       >
         <div
@@ -222,6 +279,7 @@ export default function ScrollShowcase() {
       </div>
 
       <div
+        ref={gridRef}
         className="showcase-grid"
         style={{
           maxWidth: 1200,
@@ -234,7 +292,7 @@ export default function ScrollShowcase() {
         }}
       >
         {/* Left — sticky visual panel */}
-        <div className="showcase-sticky" style={{ position: "sticky", top: "6rem" }}>
+        <div className="showcase-sticky" style={{ position: "sticky", top: `${STICKY_TOP_REM}rem` }}>
           <div
             className="glass-panel"
             style={{
@@ -250,8 +308,8 @@ export default function ScrollShowcase() {
           </div>
         </div>
 
-        {/* Right — scrollable cards */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+        {/* Right — scrollable cards (bottom buffer gives the last card dwell time) */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "2rem", paddingBottom: "60vh" }}>
           {items.map((item, i) => (
             <div
               key={i}
@@ -313,6 +371,7 @@ export default function ScrollShowcase() {
         </div>
       </div>
 
+      </div>
     </section>
   );
 }

@@ -7,14 +7,26 @@ interface ButtonWithIconProps {
   children: React.ReactNode;
   href?: string;
   onClick?: () => void;
+  size?: "default" | "sm";
 }
 
 export default function ButtonWithIcon({
   children,
   href = "#",
   onClick,
+  size = "default",
 }: ButtonWithIconProps) {
   const [hovered, setHovered] = useState(false);
+  const sm = size === "sm";
+
+  const height = sm ? 32 : 48;
+  const innerSize = sm ? 26 : 40;
+  const innerOffset = sm ? 3 : 4;
+  const collapsedPad = sm ? 16 : 24;
+  const expandedPad = sm ? 38 : 56;
+  const fontSize = sm ? "0.7rem" : "0.875rem";
+  const iconSize = sm ? 12 : 16;
+  const collapsedRight = sm ? `calc(100% - ${innerSize + innerOffset}px)` : "calc(100% - 44px)";
 
   return (
     <a
@@ -26,10 +38,10 @@ export default function ButtonWithIcon({
         position: "relative",
         display: "inline-flex",
         alignItems: "center",
-        height: 48,
-        padding: "4px",
-        paddingLeft: hovered ? 56 : 24,
-        paddingRight: hovered ? 24 : 56,
+        height,
+        padding: `${innerOffset}px`,
+        paddingLeft: hovered ? expandedPad : collapsedPad,
+        paddingRight: hovered ? collapsedPad : expandedPad,
         borderRadius: 9999,
         background: "linear-gradient(135deg, #7c5cfc, #3db5b0)",
         textDecoration: "none",
@@ -42,7 +54,7 @@ export default function ButtonWithIcon({
         style={{
           position: "relative",
           zIndex: 1,
-          fontSize: "0.875rem",
+          fontSize,
           fontWeight: 600,
           letterSpacing: "0.12em",
           textTransform: "uppercase",
@@ -55,10 +67,10 @@ export default function ButtonWithIcon({
       <span
         style={{
           position: "absolute",
-          right: hovered ? "calc(100% - 44px)" : 4,
-          top: 4,
-          width: 40,
-          height: 40,
+          right: hovered ? collapsedRight : innerOffset,
+          top: innerOffset,
+          width: innerSize,
+          height: innerSize,
           background: "#fff",
           color: "#7c5cfc",
           borderRadius: "50%",
@@ -69,7 +81,7 @@ export default function ButtonWithIcon({
           transition: "all 0.5s",
         }}
       >
-        <ArrowUpRight size={16} strokeWidth={2.5} />
+        <ArrowUpRight size={iconSize} strokeWidth={2.5} />
       </span>
     </a>
   );

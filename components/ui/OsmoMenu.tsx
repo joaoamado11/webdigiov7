@@ -215,7 +215,7 @@ function MegaDropdown({
       transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
       style={{
         position: "fixed",
-        top: 64,
+        top: 40,
         left,
         background: "#fff",
         borderRadius: 20,
@@ -224,7 +224,7 @@ function MegaDropdown({
         display: "flex",
         overflow: "hidden",
         maxWidth: "calc(100vw - 2rem)",
-        maxHeight: "calc(100vh - 80px)",
+        maxHeight: "calc(100vh - 60px)",
         overflowY: "auto",
       }}
     >
@@ -461,7 +461,7 @@ export default function OsmoMenu() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "0.75rem 2rem",
+          padding: "0.4rem 1.5rem",
           background: scrolled
             ? "rgba(255,255,255,0.85)"
             : "rgba(255,255,255,0.6)",
@@ -482,7 +482,7 @@ export default function OsmoMenu() {
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "0.75rem",
+            gap: "0.5rem",
             textDecoration: "none",
             position: "relative",
             zIndex: 60,
@@ -491,23 +491,23 @@ export default function OsmoMenu() {
         >
           <div
             style={{
-              width: 34,
-              height: 34,
-              borderRadius: 9,
+              width: 22,
+              height: 22,
+              borderRadius: 6,
               background: "linear-gradient(135deg, #7c5cfc, #3db5b0)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               color: "#fff",
               fontWeight: 700,
-              fontSize: 17,
+              fontSize: 11,
             }}
           >
             W
           </div>
           <span
             style={{
-              fontSize: "1.05rem",
+              fontSize: "0.85rem",
               fontWeight: 600,
               color: "#0e1410",
             }}
@@ -541,16 +541,16 @@ export default function OsmoMenu() {
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: "0.25rem",
-                    padding: "0.5rem 1rem",
-                    borderRadius: 8,
+                    gap: "0.2rem",
+                    padding: "0.25rem 0.65rem",
+                    borderRadius: 6,
                     border: "none",
                     background:
                       activeDropdown === label
                         ? "rgba(14,20,16,0.05)"
                         : "transparent",
                     color: "#0e1410",
-                    fontSize: "0.9rem",
+                    fontSize: "0.8rem",
                     fontWeight: 500,
                     cursor: "pointer",
                     transition: "background 0.15s ease",
@@ -563,7 +563,7 @@ export default function OsmoMenu() {
                     transition={{ duration: 0.2 }}
                     style={{ display: "flex" }}
                   >
-                    <ChevronDown size={14} />
+                    <ChevronDown size={12} />
                   </motion.span>
                 </button>
 
@@ -588,19 +588,19 @@ export default function OsmoMenu() {
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "1rem",
+              gap: "0.75rem",
               flexShrink: 0,
             }}
           >
             <a
               href="#"
               style={{
-                fontSize: "0.9rem",
+                fontSize: "0.8rem",
                 fontWeight: 500,
                 color: "#544237",
                 textDecoration: "none",
-                padding: "0.5rem 0.75rem",
-                borderRadius: 8,
+                padding: "0.25rem 0.5rem",
+                borderRadius: 6,
                 transition: "color 0.15s ease, background 0.15s ease",
               }}
               onMouseEnter={(e) => {
@@ -614,7 +614,7 @@ export default function OsmoMenu() {
             >
               About
             </a>
-            <ButtonWithIcon>
+            <ButtonWithIcon size="sm">
               Start a project
             </ButtonWithIcon>
           </div>
@@ -628,8 +628,8 @@ export default function OsmoMenu() {
             style={{
               position: "relative",
               zIndex: 60,
-              width: 40,
-              height: 40,
+              width: 28,
+              height: 28,
               borderRadius: "50%",
               border: "none",
               background: mobileOpen
@@ -642,7 +642,7 @@ export default function OsmoMenu() {
               transition: "background 0.2s ease",
             }}
           >
-            {mobileOpen ? <X size={18} /> : <Menu size={18} />}
+            {mobileOpen ? <X size={14} /> : <Menu size={14} />}
           </button>
         )}
       </header>

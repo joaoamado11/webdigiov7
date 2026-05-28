@@ -170,7 +170,7 @@ const MetadataDisplay = memo(function MetadataDisplay({ metadata }: { metadata: 
 
 // ── Hero Showcase ──
 
-const REVEAL_SCROLL_VH = 1.5; // 150vh — enough scroll distance for smooth reveal
+const REVEAL_SCROLL_VH = 2.0; // 200vh — reveal + idle + outro phases
 
 export default function HeroShowcase() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -247,6 +247,13 @@ export default function HeroShowcase() {
   const bgCardsActive = revealProgress >= 0.3;
   const keyCardsActive = revealProgress >= 0.42;
 
+  // Outro split-fade phase (progress 0.88 → 1.0) — left slides left, right slides right, both fade.
+  // Long idle/dwell before outro starts so the hero stays on screen longer.
+  const outroP = phaseOpacity(0.88, 1.0);
+  const outroFade = 1 - outroP;
+  const leftOutroX = outroP * -220;
+  const rightOutroX = outroP * 220;
+
   return (
     <section
       ref={sectionRef}
@@ -270,8 +277,12 @@ export default function HeroShowcase() {
       }}>
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "2rem 1.5rem", width: "100%" }}>
           <div className="hero-showcase-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "center" }}>
-            {/* ── Left: progressively revealed text ── */}
-            <div>
+            {/* ── Left: progressively revealed text (outros left) ── */}
+            <div style={{
+              opacity: outroFade,
+              transform: `translateX(${leftOutroX}px)`,
+              willChange: "transform, opacity",
+            }}>
               {/* Badge */}
               <div style={{ opacity: badgeOp, transform: `translateY(${(1 - badgeOp) * 16}px)`, transition: "opacity 0.25s linear, transform 0.25s linear" }}>
                 <div className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] mb-6"
@@ -341,11 +352,12 @@ export default function HeroShowcase() {
               </div>
             </div>
 
-            {/* ── Right: reveals later in the scroll ── */}
+            {/* ── Right: reveals later in the scroll (outros right) ── */}
             <div style={{
-              opacity: rightPanelOp,
-              transform: `translateX(${(1 - rightPanelOp) * 30}px)`,
+              opacity: rightPanelOp * outroFade,
+              transform: `translateX(${(1 - rightPanelOp) * 30 + rightOutroX}px)`,
               transition: "opacity 0.4s linear, transform 0.4s linear",
+              willChange: "transform, opacity",
             }}>
               <div
                 ref={containerRef}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface CardData {
   tag: string;
@@ -121,10 +121,15 @@ function CardVisual({ accent, index }: { accent: string; index: number }) {
   );
 }
 
+// Pin offset for cards and the title-release sync target.
+const CARD_STICKY_TOP_REM = 15;
+
 export default function StickyCards() {
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
+  const cardsStackRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [titleOffset, setTitleOffset] = useState(0);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -146,6 +151,20 @@ export default function StickyCards() {
     return () => observer.disconnect();
   }, []);
 
+  // Title-release sync: push header up as the cards stack scrolls past its release point.
+  useEffect(() => {
+    const onScroll = () => {
+      const stack = cardsStackRef.current;
+      if (!stack) return;
+      const stickyTopPx = CARD_STICKY_TOP_REM * 16;
+      const bottom = stack.getBoundingClientRect().bottom;
+      setTitleOffset(Math.max(0, stickyTopPx - bottom));
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <section
       ref={sectionRef}
@@ -159,18 +178,28 @@ export default function StickyCards() {
           padding: "0 1.5rem",
         }}
       >
-        {/* Header */}
+        {/* Header — sticky at top, JS-offset to release together with the last card */}
         <div
           ref={headerRef}
           className="animate-observe"
           style={{
+            position: "sticky",
+            top: 0,
+            zIndex: 5,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            gap: "1.25rem",
-            marginBottom: "3.5rem",
+            gap: "1rem",
+            marginBottom: "1.5rem",
+            padding: "1.75rem 1rem 1.25rem",
             textAlign: "center",
+            background:
+              "linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.4) 75%, rgba(255,255,255,0) 100%)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
+            transform: titleOffset > 0 ? `translateY(${-titleOffset}px)` : undefined,
+            willChange: titleOffset > 0 ? "transform" : "auto",
           }}
         >
           <div
@@ -202,6 +231,7 @@ export default function StickyCards() {
 
         {/* Cards stack */}
         <div
+          ref={cardsStackRef}
           style={{
             display: "flex",
             flexDirection: "column",
@@ -216,7 +246,7 @@ export default function StickyCards() {
               className="glass-card animate-observe sticky-card-row"
               style={{
                 position: "sticky",
-                top: 100,
+                top: `${CARD_STICKY_TOP_REM}rem`,
                 display: "flex",
                 flexDirection: "row",
                 alignItems: "center",
