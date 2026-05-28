@@ -418,7 +418,7 @@ export default function OsmoMenu() {
       const delta = currentY - lastScrollY.current;
       if (delta < -5) {
         setVisible(true);
-      } else if (delta > 150) {
+      } else if (delta > 80) {
         setVisible(false);
       }
 
