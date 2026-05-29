@@ -66,21 +66,37 @@ function AnimatedProduct({ service, isKey, containerSize, paused, onReachCenter,
   large?: boolean;
 }) {
   const controls = useAnimation();
-  const mountedRef = useRef(true);
+  const mountedRef = useRef(false);
+  const cancelledRef = useRef(false);
 
   useEffect(() => {
     mountedRef.current = true;
-    return () => { mountedRef.current = false; };
+    // Defer animation start to next frame so framer-motion's internals are ready
+    const id = requestAnimationFrame(() => {
+      if (!cancelledRef.current) {
+        // trigger re-render so the animation effect sees mountedRef=true
+        setForceReady(true);
+      }
+    });
+    return () => {
+      mountedRef.current = false;
+      cancelledRef.current = true;
+      controls.stop();
+      cancelAnimationFrame(id);
+    };
   }, []);
 
+  const [forceReady, setForceReady] = useState(false);
+
   useEffect(() => {
+    if (!forceReady) return;
     if (paused) {
       controls.stop();
       return;
     }
 
     const animate = async () => {
-      if (!mountedRef.current) return;
+      if (cancelledRef.current) return;
       if (isKey) {
         const edges: Array<"top" | "bottom" | "left" | "right"> = ["top", "bottom", "left", "right"];
         const entryEdge = edges[Math.floor(Math.random() * edges.length)];
@@ -123,10 +139,11 @@ function AnimatedProduct({ service, isKey, containerSize, paused, onReachCenter,
         loop();
       }
 
-      if (isKey) onComplete?.();
+      if (isKey && !cancelledRef.current) onComplete?.();
     };
     animate();
-  }, [isKey, containerSize, paused]);
+    return () => { cancelledRef.current = true; controls.stop(); };
+  }, [forceReady, isKey, containerSize, paused, onReachCenter, onComplete]);
 
   return (
     <motion.div className={large ? "absolute w-40 h-40 md:w-52 md:h-52" : "absolute w-16 h-16 md:w-20 md:h-20"} animate={controls} style={{ willChange: "transform, opacity, filter" }}>
