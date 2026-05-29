@@ -255,6 +255,8 @@ export default function StickyCards() {
                 minHeight: 420,
                 overflow: "hidden",
                 zIndex: i,
+                backdropFilter: "blur(18px)",
+                WebkitBackdropFilter: "blur(18px)",
               }}
             >
               {/* Background visual */}
