@@ -217,7 +217,9 @@ export default function ScrollShowcase() {
       className="glass-section"
       style={{
         padding: "6rem 0",
-        marginTop: "-50vh", // begin entry at HeroShowcase sticky release, after outro completes
+        // Pulled up to overlap the hero's tail so "Our Services" rises from the
+        // bottom while the projects grid is splitting/fading out in place.
+        marginTop: "-119vh",
         position: "relative",
         zIndex: 2,
       }}
@@ -297,8 +299,15 @@ export default function ScrollShowcase() {
             className="glass-panel"
             style={{
               position: "relative",
-              width: "100%",
-              aspectRatio: "4/5",
+              // Sized from the available viewport height (below the sticky
+              // offset) so the panel always fits on screen, then capped so it
+              // stays compact on tall displays.
+              height: `calc(100vh - ${STICKY_TOP_REM + 3}rem)`,
+              maxHeight: 600,
+              aspectRatio: "4 / 5",
+              width: "auto",
+              maxWidth: "100%",
+              marginInline: "auto",
               overflow: "hidden",
             }}
           >

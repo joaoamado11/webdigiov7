@@ -1,6 +1,7 @@
 "use client";
 
 import { Component } from "@/components/ui/feature-carousel";
+import FloatingProducts from "@/components/ui/FloatingProducts";
 
 const images = {
   step1light1:
@@ -100,6 +101,11 @@ export default function FeatureCarouselSection() {
               />
             </div>
           </div>
+        </div>
+
+        {/* Floating products showcase (relocated from the hero) */}
+        <div className="w-full max-w-5xl mx-auto" style={{ marginTop: "3.5rem" }}>
+          <FloatingProducts height={460} />
         </div>
       </div>
     </section>

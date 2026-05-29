@@ -57,7 +57,8 @@ export default function HomePage() {
           slowdownEndFactor={2}
         />
 
-        {/* Hero Showcase — scroll-driven reveal: page pauses visually, content appears piece by piece */}
+        {/* Hero Showcase — scroll-driven: hero text reveals, then a stacked card
+            deck transforms into a 2×2 "Latest Projects" grid as you scroll */}
         <HeroShowcase />
 
         {/* Scroll Showcase — glassmorph cards over the silk */}

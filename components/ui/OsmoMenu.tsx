@@ -391,19 +391,16 @@ export default function OsmoMenu() {
       lastScrollY.current = currentY;
       setScrolled(currentY > 20);
 
-      // Check hero section positions
-      const heroShowcase = document.querySelector('[class*="hero-showcase-spotlight"]');
-      const showcaseGrid = document.querySelector('[class*="showcase-grid"]');
+      const hero = document.getElementById("hero-showcase");
+      const heroRect = hero?.getBoundingClientRect();
+      const vh = window.innerHeight;
 
-      // Nav appears when HeroShowcase starts entering the viewport
-      const heroStarted = heroShowcase
-        ? heroShowcase.getBoundingClientRect().top < window.innerHeight
-        : currentY > window.innerHeight * 0.8;
-
-      // Hero fully passed — after this, hide-on-scroll behavior kicks in
-      const heroFullyPassed = showcaseGrid
-        ? showcaseGrid.getBoundingClientRect().top < window.innerHeight * 0.6
-        : false;
+      // Hidden over the cinematic intro until the hero begins entering.
+      const heroStarted = heroRect
+        ? heroRect.top < vh * 0.85
+        : currentY > vh * 0.8;
+      // Stays visible through the whole hero (text → grid → split).
+      const heroPassed = heroRect ? heroRect.bottom < vh * 0.5 : currentY > vh * 5;
 
       if (!heroStarted) {
         setVisible(false);
@@ -411,20 +408,18 @@ export default function OsmoMenu() {
         return;
       }
 
-      // Before hero fully passes, nav always visible
-      if (!heroFullyPassed) {
+      // During the hero, keep the nav pinned visible.
+      if (!heroPassed) {
         setVisible(true);
         accumDown.current = 0;
         return;
       }
 
-      // After hero fully passes: accumulate downward scroll
+      // Past the hero: standard hide-on-scroll (show on up, hide on sustained down).
       if (delta < -5) {
-        // Scrolling up — show immediately, reset accumulator
         setVisible(true);
         accumDown.current = 0;
       } else if (delta > 0) {
-        // Scrolling down — accumulate and hide after threshold
         accumDown.current += delta;
         if (accumDown.current > HIDE_THRESHOLD) {
           setVisible(false);
