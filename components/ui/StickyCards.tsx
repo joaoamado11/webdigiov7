@@ -279,6 +279,11 @@ export default function StickyCards() {
                   flexDirection: "column",
                   gap: "1.25rem",
                   alignItems: "flex-start",
+                  background: "rgba(255, 255, 255, 0.55)",
+                  backdropFilter: "blur(12px)",
+                  WebkitBackdropFilter: "blur(12px)",
+                  borderRadius: "1rem",
+                  padding: "2rem",
                 }}
               >
                 <span
